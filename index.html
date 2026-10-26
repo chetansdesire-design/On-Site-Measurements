@@ -56,7 +56,7 @@
             width: 130px;
             height: 130px;
             border-radius: 50%;
-            border: 3px solid #ca8a04;
+            border: 3px solid #ccff00;
             box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.9);
             pointer-events: none;
             overflow: hidden;
@@ -80,7 +80,7 @@
         #magnifierCrosshair::before, #magnifierCrosshair::after {
             content: '';
             position: absolute;
-            background: #ef4444;
+            background: #ff007f;
         }
         #magnifierCrosshair::before {
             top: 7px; left: 0; width: 16px; height: 2px;
@@ -316,17 +316,17 @@
                 </div>
             </div>
 
-            <!-- Architectural Color Palette -->
+            <!-- Fluorescent / High-Visibility Color Palette -->
             <div>
-                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">Line Color</label>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">Fluorescent Line Colors</label>
                 <div class="flex items-center justify-between space-x-2 pt-1">
-                    <button type="button" onclick="setPresetColor('#ca8a04')" class="w-9 h-9 rounded-xl bg-[#ca8a04] border-2 border-slate-300 focus:scale-110 transition-transform shadow-sm"></button>
-                    <button type="button" onclick="setPresetColor('#ef4444')" class="w-9 h-9 rounded-xl bg-[#ef4444] border-2 border-slate-300 focus:scale-110 transition-transform shadow-sm"></button>
-                    <button type="button" onclick="setPresetColor('#3b82f6')" class="w-9 h-9 rounded-xl bg-[#3b82f6] border-2 border-slate-300 focus:scale-110 transition-transform shadow-sm"></button>
-                    <button type="button" onclick="setPresetColor('#10b981')" class="w-9 h-9 rounded-xl bg-[#10b981] border-2 border-slate-300 focus:scale-110 transition-transform shadow-sm"></button>
-                    <button type="button" onclick="setPresetColor('#16191c')" class="w-9 h-9 rounded-xl bg-[#16191c] border-2 border-slate-300 focus:scale-110 transition-transform shadow-sm"></button>
-                    <button type="button" onclick="setPresetColor('#ffffff')" class="w-9 h-9 rounded-xl bg-white border-2 border-slate-300 focus:scale-110 transition-transform shadow-sm"></button>
-                    <input type="color" id="lineColor" value="#ca8a04" class="w-9 h-9 rounded-xl border border-slate-300 cursor-pointer">
+                    <button type="button" onclick="setPresetColor('#ccff00')" title="Neon Yellow" class="w-9 h-9 rounded-xl bg-[#ccff00] border-2 border-slate-400 focus:scale-110 transition-transform shadow-sm"></button>
+                    <button type="button" onclick="setPresetColor('#ff007f')" title="Hot Pink" class="w-9 h-9 rounded-xl bg-[#ff007f] border-2 border-slate-400 focus:scale-110 transition-transform shadow-sm"></button>
+                    <button type="button" onclick="setPresetColor('#00f0ff')" title="Bright Cyan" class="w-9 h-9 rounded-xl bg-[#00f0ff] border-2 border-slate-400 focus:scale-110 transition-transform shadow-sm"></button>
+                    <button type="button" onclick="setPresetColor('#00ff66')" title="Electric Lime" class="w-9 h-9 rounded-xl bg-[#00ff66] border-2 border-slate-400 focus:scale-110 transition-transform shadow-sm"></button>
+                    <button type="button" onclick="setPresetColor('#ff5500')" title="Neon Orange" class="w-9 h-9 rounded-xl bg-[#ff5500] border-2 border-slate-400 focus:scale-110 transition-transform shadow-sm"></button>
+                    <button type="button" onclick="setPresetColor('#ffffff')" title="Pure White" class="w-9 h-9 rounded-xl bg-white border-2 border-slate-400 focus:scale-110 transition-transform shadow-sm"></button>
+                    <input type="color" id="lineColor" value="#ccff00" class="w-9 h-9 rounded-xl border border-slate-300 cursor-pointer" title="Custom Color">
                 </div>
             </div>
         </div>
@@ -386,44 +386,113 @@
     <script>
         const DB_BASE_URL = "https://on-site-measurements-default-rtdb.firebaseio.com/";
 
+        // -----------------------------------------------------------------
+        // IndexedDB Storage Engine (Eliminates localStorage 5MB limit)
+        // -----------------------------------------------------------------
+        const IDB_NAME = 'SiteMeasureDB';
+        const IDB_STORE = 'app_data';
+
+        function openIDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(IDB_NAME, 1);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(IDB_STORE)) {
+                        db.createObjectStore(IDB_STORE);
+                    }
+                };
+                request.onsuccess = (e) => resolve(e.target.result);
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        async function idbGet(key) {
+            try {
+                const db = await openIDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(IDB_STORE, 'readonly');
+                    const req = tx.objectStore(IDB_STORE).get(key);
+                    req.onsuccess = () => resolve(req.result || null);
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (err) {
+                console.warn("IDB Get Fallback:", err);
+                const local = localStorage.getItem(`cache_${key}`);
+                return local ? JSON.parse(local) : null;
+            }
+        }
+
+        async function idbSet(key, value) {
+            try {
+                const db = await openIDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(IDB_STORE, 'readwrite');
+                    tx.objectStore(IDB_STORE).put(value, key);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            } catch (err) {
+                console.warn("IDB Set Fallback:", err);
+            }
+        }
+
+        async function idbDel(key) {
+            try {
+                const db = await openIDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(IDB_STORE, 'readwrite');
+                    tx.objectStore(IDB_STORE).delete(key);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            } catch (err) {
+                console.warn("IDB Del Fallback:", err);
+            }
+        }
+
         // Global State
         window.appState = {
             currentUser: null,
             users: {},
             customers: {},
+            customerExpanded: {},
             selectedCustomerId: null,
             selectedPhotoId: null,
             lines: [],
             isDrawing: false,
-            draggingEndpoint: null, // { lineIndex, pointType: 'start' | 'end' }
+            draggingEndpoint: null,
             startPoint: null,
             currentLine: null,
             selectedLineIndex: -1
         };
 
-        // Firebase REST Database Helpers
+        // Firebase REST Database Helpers with IndexedDB Persistence
         async function fetchNode(nodePath) {
+            let remoteData = null;
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 3500);
                 const res = await fetch(`${DB_BASE_URL}${nodePath}.json`, { signal: controller.signal });
                 clearTimeout(timeoutId);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (data !== null) {
-                    localStorage.setItem(`cache_${nodePath}`, JSON.stringify(data));
-                    return data;
+                if (res.ok) {
+                    remoteData = await res.json();
+                    updateDbStatusBadge(true);
                 }
             } catch (err) {
                 console.warn(`Database fallback active for ${nodePath}:`, err.message);
                 updateDbStatusBadge(false);
             }
-            const local = localStorage.getItem(`cache_${nodePath}`);
-            return local ? JSON.parse(local) : null;
+
+            if (remoteData !== null && remoteData !== undefined) {
+                await idbSet(nodePath, remoteData);
+                return remoteData;
+            }
+
+            return await idbGet(nodePath);
         }
 
         async function putNode(nodePath, data) {
-            localStorage.setItem(`cache_${nodePath}`, JSON.stringify(data));
+            await idbSet(nodePath, data);
             try {
                 const res = await fetch(`${DB_BASE_URL}${nodePath}.json`, {
                     method: 'PUT',
@@ -438,7 +507,7 @@
         }
 
         async function deleteNode(nodePath) {
-            localStorage.removeItem(`cache_${nodePath}`);
+            await idbDel(nodePath);
             try {
                 await fetch(`${DB_BASE_URL}${nodePath}.json`, { method: 'DELETE' });
                 updateDbStatusBadge(true);
@@ -571,7 +640,7 @@
             document.getElementById('lineColor').value = hex;
         };
 
-        // Offscreen Image Acquisition & Quality Compression
+        // Optimized Image Compression & IndexedDB Storage
         window.handlePhotoUpload = (event) => {
             const file = event.target.files[0];
             if (!file) return;
@@ -582,7 +651,7 @@
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    const MAX_DIM = 1600;
+                    const MAX_DIM = 1280; // High clarity for dimensions while staying under 300KB
                     let width = img.width;
                     let height = img.height;
 
@@ -604,12 +673,23 @@
                     const offCtx = offscreenCanvas.getContext('2d');
                     offCtx.drawImage(img, 0, 0, width, height);
 
-                    const compressedDataUrl = offscreenCanvas.toDataURL('image/jpeg', 0.85);
+                    const compressedDataUrl = offscreenCanvas.toDataURL('image/jpeg', 0.80);
 
                     savePhotoToState(file.name, compressedDataUrl);
                     document.getElementById('imageProcessingSpinner').classList.add('hidden');
+                    event.target.value = '';
+                };
+                img.onerror = () => {
+                    document.getElementById('imageProcessingSpinner').classList.add('hidden');
+                    alert("Failed to decode image. Please choose another file.");
+                    event.target.value = '';
                 };
                 img.src = e.target.result;
+            };
+            reader.onerror = () => {
+                document.getElementById('imageProcessingSpinner').classList.add('hidden');
+                alert("Failed to read image file.");
+                event.target.value = '';
             };
             reader.readAsDataURL(file);
         };
@@ -642,12 +722,20 @@
             selectPhoto(custId, photoId);
         }
 
-        // Database Tree Rendering
+        // Database Tree Rendering & Folder Expand Toggle
         async function loadDatabaseTree() {
-            const customersData = await fetchNode('customers') || {};
-            window.appState.customers = customersData;
+            const customersData = await fetchNode('customers');
+            window.appState.customers = customersData || {};
             renderCustomerTree();
         }
+
+        window.toggleCustomerExpand = (custId) => {
+            if (!window.appState.customerExpanded) {
+                window.appState.customerExpanded = {};
+            }
+            window.appState.customerExpanded[custId] = !window.appState.customerExpanded[custId];
+            renderCustomerTree();
+        };
 
         function renderCustomerTree() {
             const treeContainer = document.getElementById('customerTree');
@@ -663,17 +751,24 @@
 
             keys.forEach(custId => {
                 const customer = customers[custId];
+                if (!window.appState.customerExpanded) window.appState.customerExpanded = {};
+                if (window.appState.customerExpanded[custId] === undefined) {
+                    window.appState.customerExpanded[custId] = true;
+                }
+                const isExpanded = window.appState.customerExpanded[custId];
+
                 const custCard = document.createElement('div');
                 custCard.className = 'bg-slate-50 rounded-2xl p-3 border border-slate-300 space-y-2';
 
                 const header = document.createElement('div');
-                header.className = 'flex items-center justify-between font-black text-xs text-slate-900';
+                header.className = 'flex items-center justify-between font-black text-xs text-slate-950 cursor-pointer select-none';
                 header.innerHTML = `
-                    <div class="flex items-center space-x-2 truncate">
+                    <div class="flex items-center space-x-2 truncate flex-1" onclick="toggleCustomerExpand('${custId}')">
+                        <i class="fa-solid fa-chevron-${isExpanded ? 'down' : 'right'} text-[10px] text-slate-400"></i>
                         <i class="fa-solid fa-folder text-amber-600"></i>
                         <span class="truncate">${customer.name || 'Unnamed Site'}</span>
                     </div>
-                    <div class="flex items-center space-x-1">
+                    <div class="flex items-center space-x-1" onclick="event.stopPropagation()">
                         <button onclick="triggerPhotoUploadForCustomer('${custId}')" title="Add Photo" class="p-1 text-slate-500 hover:text-amber-600"><i class="fa-solid fa-camera text-xs"></i></button>
                         <button onclick="deleteCustomer('${custId}')" title="Delete Site" class="p-1 text-slate-500 hover:text-rose-600"><i class="fa-solid fa-trash text-xs"></i></button>
                     </div>
@@ -681,7 +776,7 @@
                 custCard.appendChild(header);
 
                 const photoList = document.createElement('div');
-                photoList.className = 'pl-3 space-y-1';
+                photoList.className = `pl-3 space-y-1 ${isExpanded ? '' : 'hidden'}`;
 
                 if (customer.photos) {
                     Object.keys(customer.photos).forEach(photoId => {
@@ -692,7 +787,7 @@
                             isSelected ? 'bg-amber-100 border border-amber-400 text-amber-950 font-bold' : 'hover:bg-slate-200 text-slate-700 font-semibold'
                         }`;
                         photoItem.innerHTML = `
-                            <div class="flex items-center space-x-2 truncate" onclick="selectPhoto('${custId}', '${photoId}')">
+                            <div class="flex items-center space-x-2 truncate flex-1" onclick="selectPhoto('${custId}', '${photoId}')">
                                 <i class="fa-regular fa-image text-slate-500"></i>
                                 <span class="truncate">${photo.title || 'Photo'}</span>
                             </div>
@@ -777,6 +872,10 @@
         let activeImage = null;
 
         function loadImageToCanvas(dataUrl, lines = []) {
+            if (!dataUrl) {
+                alert("Photo data is empty.");
+                return;
+            }
             const img = new Image();
             img.onload = () => {
                 activeImage = img;
@@ -785,6 +884,9 @@
                 window.appState.lines = lines;
                 document.getElementById('emptyCanvasState').classList.add('hidden');
                 redrawCanvas();
+            };
+            img.onerror = () => {
+                alert("Failed to display image onto canvas.");
             };
             img.src = dataUrl;
         }
@@ -810,8 +912,8 @@
         function drawDimensionLine(line, isSelected) {
             ctx.save();
             ctx.beginPath();
-            ctx.strokeStyle = line.color || '#ca8a04';
-            ctx.lineWidth = Math.max(4, canvas.width / 220);
+            ctx.strokeStyle = line.color || '#ccff00';
+            ctx.lineWidth = Math.max(5, canvas.width / 180);
             ctx.moveTo(line.x1, line.y1);
             ctx.lineTo(line.x2, line.y2);
             ctx.stroke();
@@ -833,28 +935,28 @@
             const midY = (line.y1 + line.y2) / 2;
             const text = `${line.value || '0'} ${line.unit || 'mm'}`;
 
-            const fontSize = Math.max(16, Math.round(canvas.width / 45));
+            const fontSize = Math.max(16, Math.round(canvas.width / 42));
             ctx.font = `bold ${fontSize}px sans-serif`;
             const textWidth = ctx.measureText(text).width;
 
-            // Text Card Box
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-            ctx.fillRect(midX - textWidth / 2 - 8, midY - fontSize, textWidth + 16, fontSize * 1.6);
-            ctx.strokeStyle = line.color || '#ca8a04';
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(midX - textWidth / 2 - 8, midY - fontSize, textWidth + 16, fontSize * 1.6);
+            // Text Card Box (Dark badge background)
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
+            ctx.fillRect(midX - textWidth / 2 - 10, midY - fontSize - 2, textWidth + 20, fontSize * 1.8);
+            ctx.strokeStyle = line.color || '#ccff00';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(midX - textWidth / 2 - 10, midY - fontSize - 2, textWidth + 20, fontSize * 1.8);
 
             // Label Text
-            ctx.fillStyle = '#16191c';
+            ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(text, midX, midY - fontSize * 0.15);
+            ctx.fillText(text, midX, midY - fontSize * 0.1);
 
             ctx.restore();
         }
 
         function drawArrowhead(fromx, fromy, tox, toy) {
-            const headlen = Math.max(12, canvas.width / 70);
+            const headlen = Math.max(14, canvas.width / 60);
             const angle = Math.atan2(toy - fromy, tox - fromx);
             ctx.beginPath();
             ctx.moveTo(tox, toy);
@@ -865,7 +967,7 @@
         }
 
         function drawTick(x, y) {
-            const r = Math.max(8, canvas.width / 100);
+            const r = Math.max(10, canvas.width / 90);
             ctx.beginPath();
             ctx.moveTo(x - r, y - r);
             ctx.lineTo(x + r, y + r);
@@ -873,7 +975,7 @@
         }
 
         function drawClosedDiamond(x, y) {
-            const r = Math.max(6, canvas.width / 120);
+            const r = Math.max(8, canvas.width / 100);
             ctx.beginPath();
             ctx.arc(x, y, r, 0, Math.PI * 2);
             ctx.fillStyle = ctx.strokeStyle;
@@ -886,7 +988,6 @@
 
             magLens.style.display = 'block';
             
-            // Offset lens 80px above finger so finger does not obstruct view
             const offsetY = 80;
             magLens.style.left = `${clientX - 65}px`;
             magLens.style.top = `${clientY - offsetY - 65}px`;
@@ -894,7 +995,6 @@
             magCtx.clearRect(0, 0, 130, 130);
             magCtx.save();
 
-            // Zoom level 2.5x
             const zoomScale = 2.5;
             const srcW = 130 / zoomScale;
             const srcH = 130 / zoomScale;
@@ -925,7 +1025,6 @@
                 };
             };
 
-            // Detect endpoint clicks within 35px threshold
             const findEndpoint = (cx, cy) => {
                 const threshold = Math.max(35, canvas.width / 25);
                 for (let i = 0; i < window.appState.lines.length; i++) {
@@ -943,7 +1042,6 @@
                 if (!activeImage) return;
                 const p = getPos(e);
 
-                // Check endpoint drag
                 const ep = findEndpoint(p.canvasX, p.canvasY);
                 if (ep) {
                     window.appState.draggingEndpoint = ep;
@@ -952,7 +1050,6 @@
                     return;
                 }
 
-                // New Line
                 window.appState.isDrawing = true;
                 window.appState.startPoint = { x: p.canvasX, y: p.canvasY };
                 updateLoupe(p.canvasX, p.canvasY, p.clientX, p.clientY);
@@ -1020,12 +1117,10 @@
                 }
             };
 
-            // Mouse
             canvas.addEventListener('mousedown', startDraw);
             canvas.addEventListener('mousemove', moveDraw);
             canvas.addEventListener('mouseup', endDraw);
 
-            // Touch
             canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); }, { passive: false });
             canvas.addEventListener('touchmove', (e) => { moveDraw(e); e.preventDefault(); }, { passive: false });
             canvas.addEventListener('touchend', (e) => { endDraw(); e.preventDefault(); }, { passive: false });
@@ -1036,7 +1131,7 @@
             const photoId = window.appState.selectedPhotoId;
             if (custId && photoId) {
                 window.appState.customers[custId].photos[photoId].lines = window.appState.lines;
-                await putNode(`customers/${custId}/photos/${photoId}/lines`, window.appState.lines);
+                await putNode(`customers/${custId}`, window.appState.customers[custId]);
             }
         }
 
@@ -1134,88 +1229,97 @@
                 return;
             }
 
-            const custId = window.appState.selectedCustomerId;
-            const photoId = window.appState.selectedPhotoId;
-            const cust = window.appState.customers[custId];
-            const photo = cust?.photos[photoId];
+            try {
+                const custId = window.appState.selectedCustomerId;
+                const photoId = window.appState.selectedPhotoId;
+                const cust = window.appState.customers[custId];
+                const photo = cust?.photos[photoId];
 
-            // Render drawing to clean white-background canvas
-            const pdfCanvas = document.createElement('canvas');
-            pdfCanvas.width = canvas.width;
-            pdfCanvas.height = canvas.height;
-            const pdfCtx = pdfCanvas.getContext('2d');
+                const pdfCanvas = document.createElement('canvas');
+                pdfCanvas.width = canvas.width;
+                pdfCanvas.height = canvas.height;
+                const pdfCtx = pdfCanvas.getContext('2d');
 
-            pdfCtx.fillStyle = '#ffffff';
-            pdfCtx.fillRect(0, 0, pdfCanvas.width, pdfCanvas.height);
-            pdfCtx.drawImage(canvas, 0, 0);
+                pdfCtx.fillStyle = '#ffffff';
+                pdfCtx.fillRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+                pdfCtx.drawImage(canvas, 0, 0);
 
-            const imgData = pdfCanvas.toDataURL('image/jpeg', 0.92);
+                const imgData = pdfCanvas.toDataURL('image/jpeg', 0.92);
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: 'p',
-                unit: 'mm',
-                format: 'a4'
-            });
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4'
+                });
 
-            // Report Header Box
-            doc.setFillColor(248, 250, 252);
-            doc.rect(10, 10, 190, 36, 'F');
-            doc.setDrawColor(203, 213, 225);
-            doc.rect(10, 10, 190, 36, 'S');
+                // Header Box
+                doc.setFillColor(248, 250, 252);
+                doc.rect(10, 10, 190, 36, 'F');
+                doc.setDrawColor(203, 213, 225);
+                doc.rect(10, 10, 190, 36, 'S');
 
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(15, 23, 42);
-            doc.text("SITE MEASUREMENT REPORT", 14, 18);
-
-            doc.setFontSize(9);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(71, 85, 105);
-
-            doc.text(`Customer / Project: ${cust?.name || 'N/A'}`, 14, 25);
-            doc.text(`Photo / Area Title: ${photo?.title || 'N/A'}`, 14, 30);
-            doc.text(`Supervisor: ${window.appState.currentUser?.username || 'Contractor'}`, 14, 35);
-
-            doc.text(`Date: ${new Date().toLocaleDateString()}`, 120, 25);
-            doc.text(`Time: ${new Date().toLocaleTimeString()}`, 120, 30);
-            doc.text(`Recorded Lines: ${window.appState.lines.length} dimensions`, 120, 35);
-
-            // Scale canvas image onto A4 page (max 180mm W x 180mm H)
-            const maxWidth = 190;
-            const maxHeight = 180;
-            let imgW = maxWidth;
-            let imgH = (pdfCanvas.height * imgW) / pdfCanvas.width;
-
-            if (imgH > maxHeight) {
-                imgH = maxHeight;
-                imgW = (pdfCanvas.width * imgH) / pdfCanvas.height;
-            }
-
-            const posX = 10 + (maxWidth - imgW) / 2;
-            doc.addImage(imgData, 'JPEG', posX, 50, imgW, imgH);
-
-            // Dimension Summary Table Header
-            let startY = 55 + imgH;
-            if (startY < 240 && window.appState.lines.length > 0) {
+                doc.setFontSize(16);
                 doc.setFont('helvetica', 'bold');
-                doc.setFontSize(11);
                 doc.setTextColor(15, 23, 42);
-                doc.text("Measurement Log Summary:", 14, startY);
+                doc.text("SITE MEASUREMENT REPORT", 14, 18);
 
                 doc.setFontSize(9);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(51, 65, 85);
+                doc.setTextColor(71, 85, 105);
 
-                window.appState.lines.forEach((l, idx) => {
-                    if (startY + 6 < 280) {
-                        startY += 5;
-                        doc.text(`Line #${idx + 1}: ${l.value} ${l.unit} (${l.style} style)`, 16, startY);
+                doc.text(`Customer / Project: ${cust?.name || 'N/A'}`, 14, 25);
+                doc.text(`Photo / Area Title: ${photo?.title || 'N/A'}`, 14, 30);
+                doc.text(`Supervisor: ${window.appState.currentUser?.username || 'Contractor'}`, 14, 35);
+
+                doc.text(`Date: ${new Date().toLocaleDateString()}`, 120, 25);
+                doc.text(`Time: ${new Date().toLocaleTimeString()}`, 120, 30);
+                doc.text(`Recorded Lines: ${window.appState.lines.length} dimensions`, 120, 35);
+
+                const maxWidth = 190;
+                const maxHeight = 160;
+                let imgW = maxWidth;
+                let imgH = (pdfCanvas.height * imgW) / pdfCanvas.width;
+
+                if (imgH > maxHeight) {
+                    imgH = maxHeight;
+                    imgW = (pdfCanvas.width * imgH) / pdfCanvas.height;
+                }
+
+                const posX = 10 + (maxWidth - imgW) / 2;
+                doc.addImage(imgData, 'JPEG', posX, 50, imgW, imgH);
+
+                let startY = 55 + imgH;
+                if (window.appState.lines.length > 0) {
+                    if (startY > 250) {
+                        doc.addPage();
+                        startY = 20;
                     }
-                });
-            }
 
-            doc.save(`Site_Report_${cust?.name || 'Project'}_${Date.now()}.pdf`);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text("Measurement Log Summary:", 14, startY);
+
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(51, 65, 85);
+
+                    window.appState.lines.forEach((l, idx) => {
+                        startY += 5;
+                        if (startY > 280) {
+                            doc.addPage();
+                            startY = 20;
+                        }
+                        doc.text(`Line #${idx + 1}: ${l.value} ${l.unit} (${l.style} style)`, 16, startY);
+                    });
+                }
+
+                doc.save(`Site_Report_${(cust?.name || 'Project').replace(/\s+/g, '_')}_${Date.now()}.pdf`);
+            } catch (err) {
+                console.error("PDF Export Error:", err);
+                alert("Failed to export PDF report. Please check browser permissions.");
+            }
         };
     </script>
 </body>
