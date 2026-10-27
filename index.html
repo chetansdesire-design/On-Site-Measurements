@@ -56,7 +56,7 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
 .sg.color{gap:10px}
 .sg.color .sb{flex:none;width:36px;height:36px;min-height:0;padding:0;border-radius:50%;background:var(--c)}
 .sg.color .sb[aria-pressed=true]{outline:3px solid var(--ink);outline-offset:2px}
-#cv{display:block;width:100%;height:auto;margin:0 auto;border-radius:10px;touch-action:none;background:#000;cursor:crosshair}
+#cv{display:block;max-width:100%;max-height:calc(100vh - 90px);width:auto;height:auto;margin:0 auto;border-radius:10px;touch-action:none;background:#000;cursor:crosshair}
 .hint{color:var(--mute);font-size:14px;margin:10px 0}
 .tools{display:flex;gap:8px;margin:10px 0 14px}
 .tools .btn{flex:1}
@@ -76,15 +76,14 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
 .sheet img{display:block;width:100%;border-radius:10px;margin-bottom:12px}
 .sheet pre{margin:12px 0 0;white-space:pre-wrap;font:14px/1.5 ui-monospace,Menlo,monospace;background:var(--bg);padding:12px;border-radius:10px}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;z-index:80;max-width:90%;text-align:center}
-#cv{max-width:calc(62vh*var(--ar,1))}
 .btn.sm{padding:0 12px;min-height:42px;font-size:14px}
 #export .acts{flex-wrap:wrap}
 #export .acts .btn{flex:1 1 28%}
 #export #exPdf{order:-1;flex:1 1 100%}
 @media (max-width:380px){h1{font-size:23px}#cName{font-size:19px}.btn{padding-left:12px;padding-right:12px}.wrap{padding:10px}}
-@media (min-width:700px){.wrap{max-width:1100px;padding:20px}h1{font-size:30px}.col{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}#grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}.scrim{align-items:center;padding:20px}.sheet{border-radius:20px;max-height:92vh}#export .sheet{max-width:720px}.dock .in{max-width:520px}#cv{max-width:calc(74vh*var(--ar,1))}}
-@media (min-width:960px){#v-edit>.wrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;grid-template-rows:auto auto auto auto 1fr;column-gap:24px;align-items:start}#ecust{grid-column:1/-1;margin-bottom:8px!important}#cv{grid-column:1;grid-row:2/span 4;max-width:min(100%,calc(80vh*var(--ar,1)))}.hint,.tools,#list{grid-column:2}.hint{grid-row:2;margin-top:0}.tools{grid-row:3}#list{grid-row:4;max-height:60vh;overflow:auto}}
-@media (max-height:520px){#cv{max-width:100%!important}.sheet{max-height:100vh}}
+@media (min-width:700px){.wrap{max-width:1100px;padding:20px}h1{font-size:30px}.col{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}#grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}.scrim{align-items:center;padding:20px}.sheet{border-radius:20px;max-height:92vh}#export .sheet{max-width:720px}.dock .in{max-width:520px}}
+@media (min-width:960px){#v-edit>.wrap{display:flex;flex-direction:column;align-items:center;justify-content:center}#cv{max-height:calc(100vh - 110px)}}
+@media (max-height:520px){#cv{max-height:calc(100vh - 70px)!important}.sheet{max-height:100vh}}
 </style>
 </head>
 <body>
@@ -119,21 +118,31 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
   <div class="top"><div class="wrap">
     <button class="btn" id="back" aria-label="Back to customer folder"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
     <input type="text" id="pname" aria-label="Room or location name" placeholder="Room name">
-    <button class="btn ib" id="gear" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <button class="btn ib sm" id="orthoBtn" title="Ortho Mode (90° snap)" aria-pressed="false" style="font-size:11px;font-weight:800;padding:0 6px">90°</button>
+    <button class="btn ib" id="undoTop" title="Undo last line" aria-label="Undo"><svg viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg></button>
+    <button class="btn ib" id="listBtn" title="View measurements" aria-label="Measurements"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+    <button class="btn ib" id="gear" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l-.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l-.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <button class="btn p" id="exp">Export</button>
   </div></div>
-  <div class="wrap">
-    <p class="sub" id="ecust" style="margin:0 0 4px"></p>
-    
+  <div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;min-height:calc(100vh - 65px)">
     <canvas id="cv"></canvas>
-    <p class="hint">Drag along an edge to draw a line, then enter its size. Tap a label to change or delete it. Tap the gear for line style, thickness, colour and text size.</p>
-    <div class="tools">
-      <button class="btn" id="undo">Undo last line</button>
-      <button class="btn d" id="delp">Delete photo</button>
-    </div>
-    <div id="list"></div>
   </div>
 </section>
+
+<div class="scrim" id="msheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h2 id="mTitle">Measurements & Tools</h2>
+    <div class="tools" style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn" id="mUndo" style="flex:1">Undo last line</button>
+      <button class="btn d" id="mDelp" style="flex:1">Delete photo</button>
+    </div>
+    <div id="mList" style="display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto"></div>
+    <p class="hint" style="margin-top:12px">Tap any line on the photo or list to edit its size or style.</p>
+    <div class="acts">
+      <button class="btn p" id="mDone">Done</button>
+    </div>
+  </div>
+</div>
 
 <div class="scrim" id="sheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle">
@@ -157,8 +166,10 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
     <h2 id="gTitle">Settings</h2>
     <div id="gOpts"></div>
     <p class="hint">New lines use these settings. Apply to all lines also changes the lines already on this photo.</p>
-    <div class="acts">
-      <button class="btn" id="gApply">Apply to all lines</button>
+    <div class="acts" style="flex-wrap:wrap">
+      <button class="btn d" id="gReset">Reset defaults</button>
+      <button class="btn" id="gSave">Save settings</button>
+      <button class="btn" id="gApply">Apply to all</button>
       <button class="btn p" id="gDone">Done</button>
     </div>
   </div>
@@ -202,6 +213,10 @@ const SIZES={S:.7,M:1,L:1.4,XL:1.9};
 const UNITS=['mm','cm','m','ft','in'];
 const FOLDER='<svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
 let custs=[],photos=[],cc=null,cur=null,img=null,drag=null,hits=[],sel=null,editing=null,snap=null,isNew=false,nMode=null,unit='mm';
+let zoom=1,panX=0,panY=0,orthoMode=false;
+const pointers=new Map();
+let lastPinchDist=null,lastPinchCenter=null;
+
 const defs={style:'arrow',thick:'med',color:'#ffc400',size:'M',pos:'mid'};
 const cv=$('#cv');
 const uid=()=>Math.random().toString(36).slice(2,9);
@@ -270,14 +285,14 @@ $('#cam').onchange=e=>onFiles(e.target);
 $('#gal').onchange=e=>onFiles(e.target);
 function openPhoto(id){
   cur=photos.find(p=>p.id===id);img=new Image();
-  img.onload=()=>{cv.width=cur.w;cv.height=cur.h;cv.style.setProperty('--ar',cur.w/cur.h);$('#pname').value=cur.name;$('#ecust').textContent=cc.name;sel=null;show('edit');draw();renderList()};
+  img.onload=()=>{cv.width=cur.w;cv.height=cur.h;cv.style.setProperty('--ar',cur.w/cur.h);$('#pname').value=cur.name;zoom=1;panX=0;panY=0;sel=null;show('edit');draw();renderList()};
   img.src=cur.src;
 }
 $('#back').onclick=()=>{save(cur);cur=null;renderGrid();show('cust')};
 $('#pname').oninput=e=>{cur.name=e.target.value||'Untitled'};
 $('#pname').onchange=()=>save(cur);
 
-/* drawing */
+/* drawing with zoom & pan */
 function shape(x,l,lw){
   const dx=l.x2-l.x1,dy=l.y2-l.y1,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,nx=-uy,ny=ux,al=Math.min(len*.35,lw*8),aw=al*.42,t=lw*4,s=l.style;
   x.beginPath();
@@ -310,27 +325,148 @@ function dim(x,l,fs,lw0,hl){
 function draw(flat){
   if(!cur||!img)return;paint(cv.getContext('2d'),cur,img,flat)}
 function paint(x,p,im,flat){const cvx=x.canvas===cv,sv=hits;
-  x.drawImage(im,0,0,p.w,p.h);hits=[];
+  x.save();
+  x.clearRect(0,0,p.w,p.h);
+  if(cvx){
+    x.translate(panX,panY);
+    x.scale(zoom,zoom);
+  }
+  x.drawImage(im,0,0,p.w,p.h);
+  hits=[];
   const fs=Math.max(15,Math.round(p.w/38)),lw=Math.max(3,Math.round(p.w/300));
   p.lines.forEach(l=>dim(x,l,fs,lw,!flat&&l.id===sel));
-  if(cvx&&drag&&drag.moved)dim(x,{...drag,...defs,val:''},fs,lw,false);if(!cvx)hits=sv;
+  if(cvx&&drag&&drag.moved)dim(x,{...drag,...defs,val:''},fs,lw,false);
+  x.restore();
+  if(!cvx)hits=sv;
 }
-const pt=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height}};
-cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);const q=pt(e);const h=hits.slice().reverse().find(h=>q.x>=h.x&&q.x<=h.x+h.w&&q.y>=h.y&&q.y<=h.y+h.h);drag={x1:q.x,y1:q.y,x2:q.x,y2:q.y,hit:h&&h.id,moved:false}});
-cv.addEventListener('pointermove',e=>{if(!drag)return;const q=pt(e);drag.x2=q.x;drag.y2=q.y;if(Math.hypot(q.x-drag.x1,q.y-drag.y1)>cv.width/50)drag.moved=true;draw()});
-cv.addEventListener('pointerup',()=>{
-  if(!drag)return;const d=drag;drag=null;
-  if(!d.moved){if(d.hit)openSheet(d.hit,false);else draw();return}
+const pt=e=>{const r=cv.getBoundingClientRect();const clientX=e.clientX-r.left,clientY=e.clientY-r.top;const px=clientX*(cv.width/r.width),py=clientY*(cv.height/r.height);return{x:(px-panX)/zoom,y:(py-panY)/zoom}};
+
+function distToSegment(p,a,b){
+  const l2=(b.x-a.x)*(b.x-a.x)+(b.y-a.y)*(b.y-a.y);
+  if(l2===0)return Math.hypot(p.x-a.x,p.y-a.y);
+  let t=((p.x-a.x)*(b.x-a.x)+(p.y-a.y)*(b.y-a.y))/l2;
+  t=Math.max(0,Math.min(1,t));
+  return Math.hypot(p.x-(a.x+t*(b.x-a.x)),p.y-(a.y+t*(b.y-a.y)));
+}
+
+/* Pointer Events for Drawing & Pinch/Pan */
+cv.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  cv.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId,e);
+  if(pointers.size===2){
+    drag=null;
+    const pts=[...pointers.values()];
+    lastPinchDist=Math.hypot(pts[0].clientX-pts[1].clientX,pts[0].clientY-pts[1].clientY);
+    lastPinchCenter={x:(pts[0].clientX+pts[1].clientX)/2,y:(pts[0].clientY+pts[1].clientY)/2};
+    return;
+  }
+  if(pointers.size===1){
+    const q=pt(e);
+    const h=hits.slice().reverse().find(h=>q.x>=h.x&&q.x<=h.x+h.w&&q.y>=h.y&&q.y<=h.y+h.h);
+    drag={x1:q.x,y1:q.y,x2:q.x,y2:q.y,hit:h&&h.id,moved:false};
+  }
+});
+cv.addEventListener('pointermove',e=>{
+  if(!pointers.has(e.pointerId))return;
+  pointers.set(e.pointerId,e);
+  if(pointers.size===2){
+    const pts=[...pointers.values()];
+    const dist=Math.hypot(pts[0].clientX-pts[1].clientX,pts[0].clientY-pts[1].clientY);
+    const centerClientX=(pts[0].clientX+pts[1].clientX)/2;
+    const centerClientY=(pts[0].clientY+pts[1].clientY)/2;
+    if(lastPinchDist){
+      const factor=dist/lastPinchDist;
+      const oldZoom=zoom;
+      zoom=Math.max(0.5,Math.min(6,zoom*factor));
+      const r=cv.getBoundingClientRect();
+      const cx=centerClientX-r.left,cy=centerClientY-r.top;
+      panX=cx-(cx-panX)*(zoom/oldZoom);
+      panY=cy-(cy-panY)*(zoom/oldZoom);
+    }
+    lastPinchDist=dist;
+    if(lastPinchCenter){
+      panX+=centerClientX-lastPinchCenter.x;
+      panY+=centerClientY-lastPinchCenter.y;
+    }
+    lastPinchCenter={x:centerClientX,y:centerClientY};
+    draw();
+    return;
+  }
+  if(drag&&pointers.size===1){
+    const q=pt(e);
+    let dx=q.x-drag.x1,dy=q.y-drag.y1;
+    if(orthoMode){
+      if(Math.abs(dx)>Math.abs(dy)) dy=0;
+      else dx=0;
+      drag.x2=drag.x1+dx;
+      drag.y2=drag.y1+dy;
+    }else{
+      drag.x2=q.x;
+      drag.y2=q.y;
+    }
+    if(Math.hypot(q.x-drag.x1,q.y-drag.y1)>cv.width/50)drag.moved=true;
+    draw();
+  }
+});
+cv.addEventListener('pointerup',e=>{
+  pointers.delete(e.pointerId);
+  if(pointers.size<2){lastPinchDist=null;lastPinchCenter=null;}
+  if(!drag)return;
+  const d=drag;drag=null;
+  if(!d.moved){
+    if(d.hit){
+      openSheet(d.hit,false);
+    }else{
+      const q={x:d.x1,y:d.y1};
+      const threshold=25/zoom;
+      let foundId=null;
+      for(const l of cur.lines){
+        if(distToSegment(q,{x:l.x1,y:l.y1},{x:l.x2,y:l.y2})<=threshold){
+          foundId=l.id;
+          break;
+        }
+      }
+      if(foundId)openSheet(foundId,false);
+      else draw();
+    }
+    return;
+  }
   const l={id:uid(),...defs,x1:d.x1,y1:d.y1,x2:d.x2,y2:d.y2,val:'',unit};
   cur.lines.push(l);openSheet(l.id,true);
 });
-cv.addEventListener('pointercancel',()=>{drag=null;draw()});
+cv.addEventListener('pointercancel',e=>{
+  pointers.delete(e.pointerId);
+  lastPinchDist=null;lastPinchCenter=null;
+  drag=null;draw();
+});
+
+/* Mouse wheel zoom for desktop */
+cv.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const r=cv.getBoundingClientRect();
+  const cx=e.clientX-r.left,cy=e.clientY-r.top;
+  const factor=e.deltaY<0?1.15:0.87;
+  const oldZoom=zoom;
+  zoom=Math.max(0.5,Math.min(6,zoom*factor));
+  panX=cx-(cx-panX)*(zoom/oldZoom);
+  panY=cy-(cy-panY)*(zoom/oldZoom);
+  draw();
+},{passive:false});
+
+/* Ortho mode toggle */
+$('#orthoBtn').onclick=function(){
+  orthoMode=!orthoMode;
+  this.setAttribute('aria-pressed',String(orthoMode));
+  toast(orthoMode?'Ortho mode ON (90° snap)':'Ortho mode OFF');
+};
 
 /* size sheet */
 $('#sUnit').innerHTML=UNITS.map(u=>`<option>${u}</option>`).join('');
 function openSheet(id,nw){
   editing=cur.lines.find(l=>l.id===id);isNew=nw;sel=id;snap=nw?null:{...editing};
-  $('#sTitle').textContent=nw?'Enter size':'Edit line';
+  const lineIdx=cur.lines.findIndex(l=>l.id===id)+1;
+  $('#sTitle').textContent=nw?`Enter size (Line ${lineIdx})`:`Edit line (Line ${lineIdx})`;
   $('#sVal').value=editing.val;$('#sVal').classList.remove('bad');
   $('#sUnit').value=editing.unit||unit;$('#sDel').hidden=nw;
   buildOpts($('#sOpts'),editing,draw);$('#sOpts').hidden=true;$('#sGear').setAttribute('aria-expanded','false');
@@ -357,17 +493,31 @@ $('#sGear').innerHTML=$('#gear').innerHTML;
 $('#sGear').onclick=function(){const o=$('#sOpts');o.hidden=!o.hidden;this.setAttribute('aria-expanded',String(!o.hidden))};
 $('#gear').onclick=()=>{buildOpts($('#gOpts'),defs,saveDefs);$('#gsheet').hidden=false};
 $('#gDone').onclick=()=>$('#gsheet').hidden=true;
+$('#gSave').onclick=()=>{saveDefs();toast('Settings saved successfully');};
+$('#gReset').onclick=()=>{
+  Object.assign(defs,{style:'arrow',thick:'med',color:'#ffc400',size:'M',pos:'mid'});
+  saveDefs();
+  buildOpts($('#gOpts'),defs,saveDefs);
+  toast('Settings reset to defaults');
+  draw();
+};
 $('#gApply').onclick=()=>{cur.lines.forEach(l=>Object.assign(l,defs));save(cur);draw();renderList();toast('Applied to all lines')};
-function renderList(){
-  const L=$('#list');L.innerHTML='';
-  cur.lines.forEach(l=>{const b=document.createElement('button');b.className='row';b.style.setProperty('--c',l.color||'#ffc400');b.innerHTML=`<i></i><span>Line ${cur.lines.indexOf(l)+1}<small>${STYLES[l.style]||''}</small></span><b>${esc(l.val)} ${l.unit}</b>`;b.onclick=()=>openSheet(l.id,false);L.append(b)});
-}
-$('#undo').onclick=()=>{if(!cur.lines.length)return;cur.lines.pop();save(cur);draw();renderList()};
-$('#delp').onclick=function(){arm(this,'Delete photo','Tap again to delete',()=>{
+
+const doUndo=()=>{if(!cur.lines.length)return;cur.lines.pop();save(cur);draw();renderList();toast('Line undone')};
+$('#undoTop').onclick=doUndo;
+$('#mUndo').onclick=doUndo;
+$('#listBtn').onclick=()=>{renderList();$('#msheet').hidden=true;$('#msheet').hidden=false};
+$('#mDone').onclick=()=>$('#msheet').hidden=true;
+$('#mDelp').onclick=function(){arm(this,'Delete photo','Tap again to delete',()=>{
   const id=cur.id;photos=photos.filter(p=>p!==cur);
   try{localStorage.removeItem('mm:p:'+id)}catch(e){}
-  saveIx();cur=null;renderGrid();show('cust');
+  saveIx();cur=null;$('#msheet').hidden=true;renderGrid();show('cust');
 })};
+
+function renderList(){
+  const html=cur.lines.map((l,i)=>`<button type="button" class="row" style="--c:${l.color||'#ffc400'}" data-id="${l.id}"><i></i><span>Line ${i+1}<small>${STYLES[l.style]||''}</small></span><b>${esc(l.val)} ${l.unit}</b></button>`).join('');
+  const m=$('#mList');if(m){m.innerHTML=html||'<div class="empty"><b>No measurements yet</b></div>';m.onclick=e=>{const b=e.target.closest('.row');if(!b)return;$('#msheet').hidden=true;openSheet(b.dataset.id,false)}}
+}
 
 /* export */
 const summary=()=>cc.name+' / '+cur.name+'\n'+cur.lines.map((l,i)=>`Line ${i+1}: ${l.val} ${l.unit}`).join('\n');
@@ -388,7 +538,7 @@ $('#exShare').onclick=()=>{
   },'image/jpeg',.92);
 };
 
-/* PDF export: each page is drawn on a canvas (any language prints correctly) and wrapped into a PDF file */
+/* PDF export */
 const loadImg=s=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=s});
 const FONT=`system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans',sans-serif`;
 const safe=s=>s.replace(/[/:*?"<>|]+/g,'_').trim()||'site';
