@@ -26,7 +26,7 @@ h1{font-size:26px;line-height:1.1;margin:0;font-weight:800;letter-spacing:-.02em
 .btn.ib{padding:0;width:46px;flex:none}
 .btn.ib svg{width:22px;height:22px}
 .btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.btn:focus-visible,.sb:focus-visible,.card:focus-visible,.row:focus-visible,.fold:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn:focus-visible,.sb:focus-visible,.card:focus-visible,.fold:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 input[type=text],input[type=number],select{width:100%;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:11px 12px}
 input.bad{border-color:#d6336c}
 #pname{font-weight:700;flex:1;min-width:0}
@@ -37,9 +37,9 @@ input.bad{border-color:#d6336c}
 .fold b{display:block;font-size:18px}
 .fold span{color:var(--mute);font-size:14px}
 #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:6px}
-.card{appearance:none;text-align:left;padding:0;border:2px solid var(--line);background:var(--card);border-radius:12px;overflow:hidden;cursor:pointer}
-.card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
-.cm{padding:8px 10px;display:flex;flex-direction:column}
+.card{position:relative;display:flex;flex-direction:column;border:2px solid var(--line);background:var(--card);border-radius:12px;overflow:hidden}
+.card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;cursor:pointer}
+.cm{padding:8px 10px;display:flex;flex-direction:column;cursor:pointer}
 .cm span{color:var(--mute);font-size:13px}
 .empty{margin:26px 0;padding:22px;border:2px dashed var(--line);border-radius:14px;color:var(--mute)}
 .empty b{color:var(--ink);display:block;margin-bottom:6px;font-size:18px}
@@ -60,12 +60,6 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
 .hint{color:var(--mute);font-size:14px;margin:10px 0}
 .tools{display:flex;gap:8px;margin:10px 0 14px}
 .tools .btn{flex:1}
-#list{display:flex;flex-direction:column;gap:6px}
-.row{appearance:none;width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:12px;border:2px solid var(--line);background:var(--card);border-radius:12px;cursor:pointer}
-.row i{width:16px;height:16px;border-radius:50%;background:var(--c);border:2px solid rgba(128,128,128,.8);flex:none}
-.row span{flex:1;font-weight:600}
-.row small{color:var(--mute);font-weight:500;margin-left:6px}
-.row b{font-variant-numeric:tabular-nums;font-size:18px}
 .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--card);width:100%;max-width:520px;max-height:100%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
 .sheet h2{margin:0 0 12px;font-size:20px}
@@ -77,7 +71,7 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;z-index:80;max-width:90%;text-align:center}
 .btn.sm{padding:0 12px;min-height:42px;font-size:14px}
 #export .acts{flex-wrap:wrap}
-#export .acts .btn{flex:1 1 30%}
+#export .acts .btn{flex:1 1 45%}
 #export #exPdf{order:-1;flex:1 1 100%}
 @media (max-width:380px){h1{font-size:23px}#cName{font-size:19px}.btn{padding-left:12px;padding-right:12px}.wrap{padding:10px}}
 @media (min-width:700px){.wrap{max-width:1100px;padding:20px}h1{font-size:30px}.col{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}#grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}.scrim{align-items:center;padding:20px}.sheet{border-radius:20px;max-height:92vh}#export .sheet{max-width:720px}.dock .in{max-width:520px}}
@@ -119,7 +113,6 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
     <input type="text" id="pname" aria-label="Room or location name" placeholder="Room name">
     <button class="btn ib sm" id="orthoBtn" title="Ortho Mode (90° snap)" aria-pressed="false" style="font-size:11px;font-weight:800;padding:0 6px">90°</button>
     <button class="btn ib" id="undoTop" title="Undo last line" aria-label="Undo"><svg viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg></button>
-    <button class="btn ib" id="listBtn" title="View measurements" aria-label="Measurements"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
     <button class="btn ib" id="gear" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l-.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l-.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <button class="btn p" id="exp">Export</button>
   </div></div>
@@ -127,21 +120,6 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
     <canvas id="cv"></canvas>
   </div>
 </section>
-
-<div class="scrim" id="msheet" hidden>
-  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
-    <h2 id="mTitle">Measurements & Tools</h2>
-    <div class="tools" style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn" id="mUndo" style="flex:1">Undo last line</button>
-      <button class="btn d" id="mDelp" style="flex:1">Delete photo</button>
-    </div>
-    <div id="mList" style="display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto"></div>
-    <p class="hint" style="margin-top:12px">Tap any line on the photo or list to edit its size or style.</p>
-    <div class="acts">
-      <button class="btn p" id="mDone">Done</button>
-    </div>
-  </div>
-</div>
 
 <div class="scrim" id="sheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle">
@@ -188,7 +166,7 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
 
 <div class="scrim" id="export" hidden style="align-items:center">
   <div class="sheet" style="border-radius:20px;max-height:92%">
-    <h2>Annotated photo</h2>
+    <h2>Annotated Photo</h2>
     <img id="exImg" alt="Photo with measurements" style="width:100%;max-height:70vh;object-fit:contain;background:#000">
     <div class="acts">
       <button class="btn" id="exClose">Close</button>
@@ -250,12 +228,44 @@ const saveDefs=()=>{try{localStorage.setItem('mm:defs',JSON.stringify(defs))}cat
 /* customers */
 function renderHome(){
   const L=$('#folders');L.innerHTML='';$('#empty').hidden=custs.length>0;
-  custs.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(c=>{const n=photos.filter(p=>p.cid===c.id).length;const b=document.createElement('button');b.className='fold';b.innerHTML=`${FOLDER}<div><b>${esc(c.name)}</b><span>${n} photo${n==1?'':'s'}</span></div>`;b.onclick=()=>openCust(c.id);L.append(b)});
+  custs.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(c=>{
+    const n=photos.filter(p=>p.cid===c.id).length;
+    const div=document.createElement('div');
+    div.style.cssText="display:flex;gap:8px;align-items:center;margin-bottom:10px;";
+    div.innerHTML=`<button class="fold" style="flex:1">${FOLDER}<div><b>${esc(c.name)}</b><span>${n} photo${n==1?'':'s'}</span></div></button><button class="btn d ib del-fold" title="Delete folder" aria-label="Delete folder"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>`;
+    div.querySelector('.fold').onclick=()=>openCust(c.id);
+    div.querySelector('.del-fold').onclick=(e)=>{
+      e.stopPropagation();
+      if(confirm(`Delete customer "${c.name}" and all their photos?`)){
+        photos.filter(p=>p.cid===c.id).forEach(p=>{try{localStorage.removeItem('mm:p:'+p.id)}catch(e){}});
+        photos=photos.filter(p=>p.cid!==c.id);
+        custs=custs.filter(x=>x.id!==c.id);
+        saveC();saveIx();renderHome();toast('Customer deleted');
+      }
+    };
+    L.append(div);
+  });
 }
 function openCust(id){cc=custs.find(c=>c.id===id);$('#cName').textContent=cc.name;renderGrid();show('cust')}
 function renderGrid(){
   const g=$('#grid');g.innerHTML='';const ps=photos.filter(p=>p.cid===cc.id);$('#empty2').hidden=ps.length>0;
-  ps.forEach(p=>{const b=document.createElement('button');b.className='card';b.innerHTML=`<img alt="" src="${p.src}"><div class="cm"><b>${esc(p.name)}</b><span>${p.lines.length} measurement${p.lines.length==1?'':'s'}</span></div>`;b.onclick=()=>openPhoto(p.id);g.append(b)});
+  ps.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`<img alt="" src="${p.src}"><div class="cm"><b>${esc(p.name)}</b><span>${p.lines.length} measurement${p.lines.length==1?'':'s'}</span></div><button class="btn d ib del-photo" style="position:absolute;top:6px;right:6px;width:34px;height:34px;background:var(--card);border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3)" title="Delete photo" aria-label="Delete photo"><svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>`;
+    card.querySelector('img').onclick=()=>openPhoto(p.id);
+    card.querySelector('.cm').onclick=()=>openPhoto(p.id);
+    card.querySelector('.del-photo').onclick=(e)=>{
+      e.stopPropagation();
+      if(confirm('Delete this photo?')){
+        const id=p.id;
+        photos=photos.filter(x=>x.id!==id);
+        try{localStorage.removeItem('mm:p:'+id)}catch(e){}
+        saveIx();renderGrid();toast('Photo deleted');
+      }
+    };
+    g.append(card);
+  });
 }
 function openName(mode){nMode=mode;$('#nTitle').textContent=mode==='new'?'New customer':'Rename customer';$('#nName').value=mode==='new'?'':cc.name;$('#nName').classList.remove('bad');$('#nDel').hidden=mode==='new';$('#nsheet').hidden=false;setTimeout(()=>$('#nName').focus(),60)}
 $('#newC').onclick=()=>openName('new');
@@ -282,7 +292,7 @@ $('#cam').onchange=e=>onFiles(e.target);
 $('#gal').onchange=e=>onFiles(e.target);
 function openPhoto(id){
   cur=photos.find(p=>p.id===id);img=new Image();
-  img.onload=()=>{cv.width=cur.w;cv.height=cur.h;cv.style.setProperty('--ar',cur.w/cur.h);$('#pname').value=cur.name;zoom=1;panX=0;panY=0;sel=null;show('edit');draw();renderList()};
+  img.onload=()=>{cv.width=cur.w;cv.height=cur.h;cv.style.setProperty('--ar',cur.w/cur.h);$('#pname').value=cur.name;zoom=1;panX=0;panY=0;sel=null;show('edit');draw();};
   img.src=cur.src;
 }
 $('#back').onclick=()=>{save(cur);cur=null;renderGrid();show('cust')};
@@ -478,14 +488,14 @@ function closeSheet(ok){
     save(cur);
   }else if(isNew){cur.lines=cur.lines.filter(l=>l!==editing)}
   else Object.assign(editing,snap);
-  sel=null;editing=null;$('#sheet').hidden=true;draw();renderList();
+  sel=null;editing=null;$('#sheet').hidden=true;draw();
 }
 $('#sOk').onclick=()=>closeSheet(true);
 $('#sCancel').onclick=()=>closeSheet(false);
-$('#sDel').onclick=()=>{cur.lines=cur.lines.filter(l=>l!==editing);save(cur);sel=null;editing=null;$('#sheet').hidden=true;draw();renderList()};
+$('#sDel').onclick=()=>{cur.lines=cur.lines.filter(l=>l!==editing);save(cur);sel=null;editing=null;$('#sheet').hidden=true;draw();};
 $('#sVal').addEventListener('keydown',e=>{if(e.key==='Enter')closeSheet(true);if(e.key==='Escape')closeSheet(false)});
 
-/* editor: defaults, list, undo, delete */
+/* editor: defaults, settings */
 $('#sGear').innerHTML=$('#gear').innerHTML;
 $('#sGear').onclick=function(){const o=$('#sOpts');o.hidden=!o.hidden;this.setAttribute('aria-expanded',String(!o.hidden))};
 $('#gear').onclick=()=>{buildOpts($('#gOpts'),defs,saveDefs);$('#gsheet').hidden=false};
@@ -498,34 +508,26 @@ $('#gReset').onclick=()=>{
   toast('Settings reset to defaults');
   draw();
 };
-$('#gApply').onclick=()=>{cur.lines.forEach(l=>Object.assign(l,defs));save(cur);draw();renderList();toast('Applied to all lines')};
+$('#gApply').onclick=()=>{cur.lines.forEach(l=>Object.assign(l,defs));save(cur);draw();toast('Applied to all lines')};
 
-const doUndo=()=>{if(!cur.lines.length)return;cur.lines.pop();save(cur);draw();renderList();toast('Line undone')};
+const doUndo=()=>{if(!cur.lines.length)return;cur.lines.pop();save(cur);draw();toast('Line undone')};
 $('#undoTop').onclick=doUndo;
-$('#mUndo').onclick=doUndo;
-$('#listBtn').onclick=()=>{renderList();$('#msheet').hidden=true;$('#msheet').hidden=false};
-$('#mDone').onclick=()=>$('#msheet').hidden=true;
-$('#mDelp').onclick=function(){arm(this,'Delete photo','Tap again to delete',()=>{
-  const id=cur.id;photos=photos.filter(p=>p!==cur);
-  try{localStorage.removeItem('mm:p:'+id)}catch(e){}
-  saveIx();cur=null;$('#msheet').hidden=true;renderGrid();show('cust');
-})};
-
-function renderList(){
-  const html=cur.lines.map((l,i)=>`<button type="button" class="row" style="--c:${l.color||'#ffc400'}" data-id="${l.id}"><i></i><span>Line ${i+1}<small>${STYLES[l.style]||''}</small></span><b>${esc(l.val)} ${l.unit}</b></button>`).join('');
-  const m=$('#mList');if(m){m.innerHTML=html||'<div class="empty"><b>No measurements yet</b></div>';m.onclick=e=>{const b=e.target.closest('.row');if(!b)return;$('#msheet').hidden=true;openSheet(b.dataset.id,false)}}
-}
 
 /* export */
 $('#exp').onclick=()=>{
-  sel=null;draw(true);$('#exImg').src=cv.toDataURL('image/jpeg',.92);draw();
+  sel=null;
+  draw(true);
+  $('#exImg').src=cv.toDataURL('image/jpeg',.92);
+  draw(false);
   $('#export').hidden=false;
 };
 $('#exClose').onclick=()=>$('#export').hidden=true;
 $('#exShare').onclick=()=>{
   draw(true);
-  cv.toBlob(async b=>{draw();
-    try{const f=new File([b],(cc.name+'-'+cur.name).replace(/[^\w-]+/g,'_')+'.jpg',{type:'image/jpeg'});
+  cv.toBlob(async b=>{
+    draw(false);
+    try{
+      const f=new File([b],(cc.name+'-'+cur.name).replace(/[^\w-]+/g,'_')+'.jpg',{type:'image/jpeg'});
       if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:cc.name+' / '+cur.name})}
       else if(navigator.share){await navigator.share({title:cc.name+' / '+cur.name})}
       else toast('Sharing is not available. Press and hold the image to save it.')}
@@ -533,39 +535,24 @@ $('#exShare').onclick=()=>{
   },'image/jpeg',.92);
 };
 
-/* PDF export */
+/* PDF export (Clean image only, no text lists) */
 const loadImg=s=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=s});
 const FONT=`system-ui,-apple-system,'Segoe UI',Roboto,'Noto Sans',sans-serif`;
 const safe=s=>s.replace(/[/:*?"<>|]+/g,'_').trim()||'site';
 async function pdfPages(p,cname){
-  const im=await loadImg(p.src),W=1240,H=1754,M=80,CW=W-2*M,RH=56,CL=(CW-48)/2,pages=[];
+  const im=await loadImg(p.src),W=1240,H=1754,M=80,CW=W-2*M,pages=[];
   const mk=()=>{const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);x.textBaseline='top';pages.push(c);return x};
-  const head=(x,more)=>{
+  const head=x=>{
     x.fillStyle='#16191c';x.textAlign='left';x.font=`800 54px ${FONT}`;x.fillText(cname,M,M);
-    x.font=`600 36px ${FONT}`;x.fillText(p.name+(more?' (continued)':''),M,M+70);
+    x.font=`600 36px ${FONT}`;x.fillText(p.name,M,M+70);
     x.fillStyle='#5d666d';x.font=`500 28px ${FONT}`;x.textAlign='right';
     x.fillText(new Date(p.t||Date.now()).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}),W-M,M+12);
     x.fillStyle='#f5c400';x.fillRect(M,M+124,CW,6);return M+164};
-  const rows=(x,y0,from)=>{
-    const per=Math.floor((H-M-y0)/RH),n=Math.max(0,Math.min(p.lines.length-from,per*2));
-    for(let k=0;k<n;k++){
-      const l=p.lines[from+k],cx=M+(k<per?0:CL+48),cy=y0+(k%per)*RH;
-      x.fillStyle=l.color||'#ffc400';x.strokeStyle='#16191c';x.lineWidth=3;x.beginPath();x.arc(cx+16,cy+22,13,0,7);x.fill();x.stroke();
-      x.fillStyle='#16191c';x.textAlign='left';x.font=`500 30px ${FONT}`;x.fillText(`Line ${from+k+1}`,cx+44,cy+6);
-      x.textAlign='right';x.font=`800 34px ${FONT}`;x.fillText(`${l.val} ${l.unit}`,cx+CL,cy+4);
-      x.fillStyle='#d9dcde';x.fillRect(cx,cy+RH-6,CL,2);
-    }
-    return from+n;
-  };
-  let x=mk(),y=head(x,false);
+  
+  let x=mk(),y=head(x);
   const pc=document.createElement('canvas');pc.width=p.w;pc.height=p.h;paint(pc.getContext('2d'),p,im,true);
-  const s=Math.min(CW/p.w,1000/p.h),dw=p.w*s,dh=p.h*s;
-  x.drawImage(pc,M+(CW-dw)/2,y,dw,dh);y+=dh+40;
-  x.fillStyle='#16191c';x.textAlign='left';
-  if(!p.lines.length){x.font=`500 30px ${FONT}`;x.fillText('No measurements yet.',M,y);return pages}
-  x.font=`800 34px ${FONT}`;x.fillText('Measurements',M,y);
-  let i=rows(x,y+60,0);
-  while(i<p.lines.length){x=mk();y=head(x,true);i=rows(x,y,i)}
+  const s=Math.min(CW/p.w,(H-y-M)/p.h),dw=p.w*s,dh=p.h*s;
+  x.drawImage(pc,M+(CW-dw)/2,y,dw,dh);
   return pages;
 }
 function makePdf(jp){
