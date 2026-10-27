@@ -74,11 +74,10 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
 .acts{display:flex;gap:8px;margin-top:14px}
 .acts .btn{flex:1;padding-left:8px;padding-right:8px}
 .sheet img{display:block;width:100%;border-radius:10px;margin-bottom:12px}
-.sheet pre{margin:12px 0 0;white-space:pre-wrap;font:14px/1.5 ui-monospace,Menlo,monospace;background:var(--bg);padding:12px;border-radius:10px}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;z-index:80;max-width:90%;text-align:center}
 .btn.sm{padding:0 12px;min-height:42px;font-size:14px}
 #export .acts{flex-wrap:wrap}
-#export .acts .btn{flex:1 1 28%}
+#export .acts .btn{flex:1 1 30%}
 #export #exPdf{order:-1;flex:1 1 100%}
 @media (max-width:380px){h1{font-size:23px}#cName{font-size:19px}.btn{padding-left:12px;padding-right:12px}.wrap{padding:10px}}
 @media (min-width:700px){.wrap{max-width:1100px;padding:20px}h1{font-size:30px}.col{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}#grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}.scrim{align-items:center;padding:20px}.sheet{border-radius:20px;max-height:92vh}#export .sheet{max-width:720px}.dock .in{max-width:520px}}
@@ -190,11 +189,9 @@ summary{font-weight:700;padding:8px 0;cursor:pointer}
 <div class="scrim" id="export" hidden style="align-items:center">
   <div class="sheet" style="border-radius:20px;max-height:92%">
     <h2>Annotated photo</h2>
-    <img id="exImg" alt="Photo with measurements">
-    <pre id="exTxt"></pre>
+    <img id="exImg" alt="Photo with measurements" style="width:100%;max-height:70vh;object-fit:contain;background:#000">
     <div class="acts">
       <button class="btn" id="exClose">Close</button>
-      <button class="btn" id="exCopy">Copy list</button>
       <button class="btn" id="exShare">Share image</button>
       <button class="btn p" id="exPdf">Save as PDF</button>
     </div>
@@ -520,19 +517,17 @@ function renderList(){
 }
 
 /* export */
-const summary=()=>cc.name+' / '+cur.name+'\n'+cur.lines.map((l,i)=>`Line ${i+1}: ${l.val} ${l.unit}`).join('\n');
 $('#exp').onclick=()=>{
   sel=null;draw(true);$('#exImg').src=cv.toDataURL('image/jpeg',.92);draw();
-  $('#exTxt').textContent=cur.lines.length?summary():'No measurements yet.';$('#export').hidden=false;
+  $('#export').hidden=false;
 };
 $('#exClose').onclick=()=>$('#export').hidden=true;
-$('#exCopy').onclick=async()=>{try{await navigator.clipboard.writeText(summary());toast('List copied')}catch(e){toast('Copy is not available here. Select the text instead.')}};
 $('#exShare').onclick=()=>{
   draw(true);
   cv.toBlob(async b=>{draw();
     try{const f=new File([b],(cc.name+'-'+cur.name).replace(/[^\w-]+/g,'_')+'.jpg',{type:'image/jpeg'});
-      if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:cc.name+' / '+cur.name,text:summary()})}
-      else if(navigator.share){await navigator.share({title:cc.name+' / '+cur.name,text:summary()})}
+      if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:cc.name+' / '+cur.name})}
+      else if(navigator.share){await navigator.share({title:cc.name+' / '+cur.name})}
       else toast('Sharing is not available. Press and hold the image to save it.')}
     catch(e){if(e&&e.name!=='AbortError')toast('Sharing failed. Press and hold the image to save it.')}
   },'image/jpeg',.92);
